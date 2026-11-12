@@ -1,7 +1,7 @@
 namespace SmartHomeMini;
 
-// Facade cung cap cac thao tac muc cao cho nhieu thiet bi
-public class SmartHomeFacade
+// Lop Facade da duoc sua o phien ban v2
+public sealed class SmartHomeFacade
 {
     private readonly IDevice light;
     private readonly IDevice fan;
@@ -23,12 +23,15 @@ public class SmartHomeFacade
 
     public void GoToSleep()
     {
-        // Bug 1: Quen khoa cua khi di ngu (door.Lock())
         fan.TurnOff();
+
+        // Da sua: da bo sung khoa cua khi di ngu theo dung yeu cau
+        door.Lock();
+
         light.TurnOn();
 
-        // Bug 2: Fix cung 30% thay vi doc tu HomeConfiguration.Instance.NightLightLevel
-        Console.WriteLine("Night light level: 30%");
-        // TODO: can lay muc sang ban dem tu cau hinh chung
+        // Da sua: lay gia tri NightLightLevel truc tiep tu HomeConfiguration.Instance thay vi fix cung
+        int level = HomeConfiguration.Instance.NightLightLevel;
+        Console.WriteLine($"Night light level: {level}%");
     }
 }
