@@ -7,13 +7,13 @@ class Program
     static void Main(string[] args)
     {
         Console.WriteLine("==================================================");
-        Console.WriteLine("  SMART HOME MINI - PHIEN BAN v1 (DRAFT / BUGGY) ");
+        Console.WriteLine("  SMART HOME MINI - PHIEN BAN v2 (FIXED 1 PHAN)   ");
         Console.WriteLine("==================================================");
 
-        // 1. Thu tao thiet bi qua Factory
-        Console.WriteLine("\n[1] Thu tao thiet bi qua Factory:");
-        IDevice light = DeviceFactory.Create("light", "Living room light");
-        IDevice fan = DeviceFactory.Create("fan", "Living room fan");
+        // 1. Test Factory da sua: ho tro chu hoa thuong va khoang trang
+        Console.WriteLine("\n[1] Test Factory (thu voi chu hoa va khoang trang):");
+        IDevice light = DeviceFactory.Create("  Light  ", "Living room light");
+        IDevice fan = DeviceFactory.Create("FAN", "Living room fan");
         IDevice door = DeviceFactory.Create("door", "Main door");
 
         light.TurnOn();
@@ -23,31 +23,31 @@ class Program
             lockableDoor.Lock();
         }
 
-        // 2. Thu tao loai thiet bi khong hop le (camera)
-        Console.WriteLine("\n[2] Thu tao camera (chua ho tro):");
-        IDevice camera = DeviceFactory.Create("camera", "Living room camera");
-        if (camera == null)
+        // 2. Test Factory voi loai khong hop le (kiem tra xem da nem ArgumentException chua)
+        Console.WriteLine("\n[2] Test ngoai le khi tao thiet bi 'camera':");
+        try
         {
-            Console.WriteLine("Ket qua: camera tra ve null (Bug: le ra phai nem ArgumentException theo de bai)");
+            IDevice camera = DeviceFactory.Create("camera", "Security Camera");
+            Console.WriteLine("Loi: le ra phai nem ArgumentException!");
+        }
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine($"[THANH CONG] Da bat duoc ArgumentException: {ex.Message}");
         }
 
-        // 3. Thu kich hoat cac che do qua Facade
-        Console.WriteLine("\n[3] Kich hoat che do GoToWork qua Facade:");
+        // 3. Test Facade GoToWork va GoToSleep da sua
+        Console.WriteLine("\n[3] Test Facade: GoToWork");
         var facade = new SmartHomeFacade(light, fan, (ILockable)door);
         facade.GoToWork();
 
-        Console.WriteLine("\n[4] Kich hoat che do GoToSleep qua Facade:");
+        Console.WriteLine("\n[4] Test Facade: GoToSleep (da them khoa cua va doc NightLightLevel tu config)");
         facade.GoToSleep();
-        Console.WriteLine("(Bug: GoToSleep quen khoa cua va muc sang dang bi fix cung 30%)");
 
-        // 4. Test Singleton
-        Console.WriteLine("\n[5] Kiem tra Singleton:");
+        // 4. Singleton (van con sot loi chua sua o file HomeConfiguration.cs!)
+        Console.WriteLine("\n[5] Kiem tra Singleton (chua sua HomeConfiguration):");
         var c1 = HomeConfiguration.Instance;
         var c2 = HomeConfiguration.Instance;
         Console.WriteLine($"c1 giong c2: {ReferenceEquals(c1, c2)}");
-
-        // Constructor van de public nen ngoai van new duoc
-        var c3 = new HomeConfiguration();
-        Console.WriteLine($"c3 (new truc tiep) giong c1: {ReferenceEquals(c1, c3)} (Bug: mat tinh doc quyen Singleton)");
+        Console.WriteLine("WARNING: HomeConfiguration van de constructor public va chua dung Lazy<T> theo de bai!");
     }
 }
