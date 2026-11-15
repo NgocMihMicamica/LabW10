@@ -1,30 +1,24 @@
 namespace SmartHomeMini;
 
-// Cau hinh chung cho ngoi nha
-// Bug 1: Quen tu khoa sealed
-// Bug 2: Constructor van de public (ben ngoai van tu new duoc)
-public class HomeConfiguration
+// Da sua o v3: 
+// 1. Them tu khoa 'sealed' de ngan chan ke thua, tranh viec lop con pha vo co che Singleton.
+// 2. Ap dung Lazy<HomeConfiguration> de dam bao thread-safe (an toan luong) va khoi tao luoi (lazy initialization).
+// 3. Constructor dat private de client ben ngoai khong the tu tien goi 'new'.
+public sealed class HomeConfiguration
 {
-    // Bug 3: Singleton kieu co dien, chua Thread-Safe va chua dung Lazy<T> nhu de yeu cau
-    private static HomeConfiguration? instance;
+    // Bien static Lazy khoi tao the hien khi can thiet va dam bao luong an toan mac dinh
+    private static readonly Lazy<HomeConfiguration> lazy =
+        new(() => new HomeConfiguration());
 
-    public static HomeConfiguration Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = new HomeConfiguration();
-            }
-            return instance;
-        }
-    }
+    // Property Instance tra ve the hien duy nhat thong qua lazy.Value
+    public static HomeConfiguration Instance => lazy.Value;
 
+    // Cac thuoc tinh cau hinh dung chung cho toan bo he thong
     public string HomeName { get; set; } = "My Home";
     public int NightLightLevel { get; set; } = 30;
 
-    // TODO: Constructor nen de private khong? De public tam de test
-    public HomeConfiguration()
+    // Constructor private de khong the new truc tiep tu ben ngoai
+    private HomeConfiguration()
     {
     }
 }
